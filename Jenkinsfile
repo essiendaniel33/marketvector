@@ -22,8 +22,7 @@ pipeline {
         stage('Building Docker Image') {
             steps {
                 script {
-                    dir('docker') {
-                        sh "docker build -t marketvector-html-image ."
+                    sh "docker build -t marketvector-html-image ."
                  
 }
                 
