@@ -23,7 +23,6 @@ pipeline {
             steps {
                 script {
                     dir('docker') {
-                        sh "chmod 777 /var/run/docker.sock"
                         sh "docker build -t marketvector-html-image ."
                  
 }
@@ -32,7 +31,7 @@ pipeline {
                 }           
             }
         
-        stage('Push To DockerHub Registry') {
+        stage('Push To Elastic Container Registry') {
             steps {
                 script {
                 sh """
