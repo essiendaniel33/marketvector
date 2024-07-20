@@ -3,7 +3,7 @@ pipeline {
     parameters {
         string(name: 'BRANCH', defaultValue: 'main', description: 'Pass the name of branch to build from ')
         string(name: 'REPO_URL', defaultValue: 'https://github.com/essiendaniel2013/marketvector.git', description: 'Pass the Repository url to build from ')
-        string(name: 'VERSION', description: 'version of docker image to be built ')
+        string(name: 'VERSION', description: 'version of docker image to be built, eg. V001 ')
         }
     environment { 
         BRANCH = "${params.BRANCH}"
