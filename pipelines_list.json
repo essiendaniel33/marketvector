@@ -1,0 +1,14 @@
+[
+  {
+    "name": "terraform-pipeline",
+    "repo": "https://github.com/essiendaniel33/java-app-ci-cd.git",
+    "branch": "main",
+    "jenkinsfile": "terraform/Jenkinsfile"
+  },
+  {
+    "name": "terraform-pipeline",
+    "repo": "https://github.com/essiendaniel33/java-app-ci-cd.git",
+    "branch": "main",
+    "jenkinsfile": "terraform/Jenkinsfile"
+  }
+]
