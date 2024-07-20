@@ -22,7 +22,7 @@ resource "aws_ecs_task_definition" "marketvector_app" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "/ecs/new-app"
+          awslogs-group         = "/ecs/marketvector-app"
           awslogs-region        = "us-east-1"
           awslogs-stream-prefix = "ecs"
         }
