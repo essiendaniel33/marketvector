@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket         = "var.s3_bucket_name"
+    bucket         = "marketvector-s3-bucket"
     key            = "terraform_statefile"   
     region         = "us-east-1"
-    dynamodb_table = "var.dynamodb_table_name" 
+    dynamodb_table = "marketvector-dynamodb" 
   }
 }
