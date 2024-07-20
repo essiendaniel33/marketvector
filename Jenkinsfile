@@ -13,7 +13,7 @@ pipeline {
         stage('Clone GitHub Repo') {
             steps {
                 script {
-                git branch: "${BRANCH}", credentialsId: 'jenkins-github-creds', url: "${REPO_URL}"
+                git branch: "${BRANCH}", credentialsId: 'github_creds', url: "${REPO_URL}"
             }
         }
         }
