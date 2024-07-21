@@ -6,13 +6,13 @@
     "jenkinsfile": "terraform/Jenkinsfile"
   },
   {
-    "name": "CI-pipeline",
+    "name": "continuous-integration-continuous-delivery",
     "repo": "https://github.com/essiendaniel2013/marketvector.git",
     "branch": "main",
     "jenkinsfile": "json-ci/Jenkinsfile"
   },
   {
-    "name": "CI-CD-pipeline",
+    "name": "continuous-integration-continuous-deployment",
     "repo": "https://github.com/essiendaniel2013/marketvector.git",
     "branch": "main",
     "jenkinsfile": "json-ci-cd/Jenkinsfile"
