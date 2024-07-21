@@ -51,25 +51,24 @@ pipeline {
                 }
               }
 
-         stage('Stop all running task') {
+ /*        stage('Stop all running task') {
             steps {
                 script {
-                    sh "aws ecs list-tasks --cluster marketvector-ecs-cluster --service-name marketvector-ecs-service --desired-status RUNNING --query 'taskArns' --output text | xargs -n 1 -I {} aws ecs stop-task --cluster marketvector-ecs-cluster --task {}
-"
+                    sh "aws ecs list-tasks --cluster marketvector-ecs-cluster --service-name marketvector-ecs-service --desired-status RUNNING --query 'taskArns' --output text | xargs -n 1 -I {} aws ecs stop-task --cluster marketvector-ecs-cluster --task"
                     }
                   }
                 }
-             }   
+                
         
          stage('Update new ecs service') {
             steps {
                 script {
                     dir('json') {
-                    sh "aws ecs update-service --cli-input-json file://ecs-service.json"
+                    sh "aws ecs create-service --cli-input-json file://ecs-service.json"
                     }
                   }
                 }
              }   
-    
+    */
       }
   }  
