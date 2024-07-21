@@ -1,0 +1,14 @@
+[
+  {
+    "name": "terraform-pipeline",
+    "repo": "https://github.com/essiendaniel33/springboot-app-ci-cd.git",
+    "branch": "main",
+    "jenkinsfile": "terraform/Jenkinsfile"
+  },
+  {
+    "name": "deployment-pipeline",
+    "repo": "https://github.com/essiendaniel33/springboot-app-ci-cd.git",
+    "branch": "main",
+    "jenkinsfile": "continuous-deployment/Jenkinsfile"
+  }
+]
