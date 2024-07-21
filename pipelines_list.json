@@ -9,12 +9,12 @@
     "name": "continuous-integration-continuous-delivery",
     "repo": "https://github.com/essiendaniel2013/marketvector.git",
     "branch": "main",
-    "jenkinsfile": "json-ci/Jenkinsfile"
+    "jenkinsfile": "continuous-integration-continuous-delivery/Jenkinsfile"
   },
   {
     "name": "continuous-integration-continuous-deployment",
     "repo": "https://github.com/essiendaniel2013/marketvector.git",
     "branch": "main",
-    "jenkinsfile": "json-ci-cd/Jenkinsfile"
+    "jenkinsfile": "continuous-integration-continuous-deployment/Jenkinsfile"
   }
 ]
