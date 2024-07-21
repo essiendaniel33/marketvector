@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     dir('json') {
-                    sh "aws ecs create-service --cli-input-json file://ecs-service.json"
+                    sh "aws ecs update-service --cli-input-json file://ecs-service.json"
                     }
                   }
                 }
