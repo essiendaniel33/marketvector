@@ -38,7 +38,7 @@ pipeline {
                 }
             }
         }
-/*        stage('Update Task Definition') {
+        stage('Update Task Definition') {
             steps {
                 script {
                     def image = "905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:${VERSION}"
