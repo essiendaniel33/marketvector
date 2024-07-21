@@ -65,11 +65,11 @@ pipeline {
                 }
            
         
-         stage('Update new ecs service') {
+         stage('Create new ecs service') {
             steps {
                 script {
                     dir('json') {
-                    sh "aws ecs update-service --cli-input-json file://ecs-service.json"
+                    sh "aws ecs create-service --cli-input-json file://ecs-service.json"
                     }
                   }
                 }
