@@ -51,7 +51,7 @@ pipeline {
                 }
               }
 
- /*        stage('ECS service') {
+         stage('ECS service') {
             steps {
                 script {
                     dir('json') {
@@ -60,6 +60,6 @@ pipeline {
                   }
                 }
              }   
-    */
+    
       }
   }  
