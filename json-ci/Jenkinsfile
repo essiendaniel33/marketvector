@@ -75,7 +75,7 @@ pipeline {
                 }
             }
         }
-        stage('Update ECS Service') {
+        stage('Create ECS Service') {
             steps {
                 script {
                     sh "aws ecs create-service --cli-input-json file://${ECS_SERVICE_JSON}"
