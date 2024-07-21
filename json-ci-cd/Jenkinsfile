@@ -9,8 +9,8 @@ pipeline {
         BRANCH = "${params.BRANCH}"
         REPO_URL = "${params.REPO_URL}"
         VERSION = "${params.VERSION}"
-        TASK_DEF_JSON = 'json/task-def.json'
-        ECS_SERVICE_JSON = 'json/ecs-service.json'
+        TASK_DEF_JSON = 'task-def.json'
+        ECS_SERVICE_JSON = 'ecs-service.json'
     }
     stages {
         stage('Clone GitHub Repo') {
