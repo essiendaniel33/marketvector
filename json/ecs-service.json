@@ -1,7 +1,7 @@
 {
   "cluster": "marketvector-ecs-cluster",
   "service": "marketvector-ecs-service",
-  "taskDefinition": "arn:aws:ecs:us-east-1:905418280053:task-definition/marketvector-app:10",
+  "taskDefinition": "arn:aws:ecs:us-east-1:905418280053:task-definition/marketvector-app:22",
   "desiredCount": 2,
   "networkConfiguration": {
     "awsvpcConfiguration": {
