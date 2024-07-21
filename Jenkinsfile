@@ -18,16 +18,14 @@ pipeline {
                 git branch: "${BRANCH}", credentialsId: 'github_creds', url: "${REPO_URL}"
             }
         }
-        }
+    }
         stage('Building Docker Image') {
             steps {
                 script {
-                    sh "docker build -t marketvector-html-image ."
-                 
-                    }
-                
-                 }
-               }           
+                    sh "docker build -t marketvector-html-image ."           
+              }
+          }
+      }           
         
         stage('Push To Elastic Container Registry') {
             steps {
@@ -37,9 +35,9 @@ pipeline {
                 docker tag marketvector-html-image 905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:${VERSION}
                 docker push 905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:${VERSION}
                 """
-                     }             
-              }
-           }
+                }             
+            }
+        }
 
          stage('Running Task Definition') {
             steps {
