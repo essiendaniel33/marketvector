@@ -6,7 +6,6 @@ pipeline {
         string(name: 'VERSION', defaultValue: "V00${BUILD_ID}", description: 'Version of Docker image to be built, e.g., V001')
     }
     environment {
-        AWS_REGION = 'us-east-1'
         BRANCH = "${params.BRANCH}"
         REPO_URL = "${params.REPO_URL}"
         VERSION = "${params.VERSION}"
@@ -32,10 +31,20 @@ pipeline {
             steps {
                 script {
                     sh """
-                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 905418280053.dkr.ecr.${AWS_REGION}.amazonaws.com
-                    docker tag marketvector-html-image 905418280053.dkr.ecr.${AWS_REGION}.amazonaws.com/marketvector-app-repo:${VERSION}
-                    docker push 905418280053.dkr.ecr.${AWS_REGION}.amazonaws.com/marketvector-app-repo:${VERSION}
+                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 905418280053.dkr.ecr.us-east-1.amazonaws.com
+                    docker tag marketvector-html-image 905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:${VERSION}
+                    docker push 905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:${VERSION}
                     """
+                }
+            }
+        }
+        stage('Update Task Definition') {
+            steps {
+                script {
+                    def image = "905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:${VERSION}"
+                    def taskDefJson = readFile(file: TASK_DEF_JSON)
+                    taskDefJson = taskDefJson.replaceAll(/"image": "905418280053.dkr.ecr.us-east-1.amazonaws.com\/marketvector-app-repo:[^"]+"/, "\"image\": \"${image}\"")
+                    writeFile(file: TASK_DEF_JSON, text: taskDefJson)
                 }
             }
         }
@@ -43,7 +52,7 @@ pipeline {
             steps {
                 script {
                     def taskDefArn = sh(script: """
-                        aws ecs register-task-definition --cli-input-json file://${TASK_DEF_JSON} --region ${AWS_REGION} --query 'taskDefinition.taskDefinitionArn' --output text
+                        aws ecs register-task-definition --cli-input-json file://${TASK_DEF_JSON} --query 'taskDefinition.taskDefinitionArn' --output text
                     """, returnStdout: true).trim()
 
                     echo "Task Definition ARN: ${taskDefArn}"
@@ -69,7 +78,7 @@ pipeline {
         stage('Update ECS Service') {
             steps {
                 script {
-                    sh "aws ecs update-service --cli-input-json file://${ECS_SERVICE_JSON} --region ${AWS_REGION}"
+                    sh "aws ecs update-service --cli-input-json file://${ECS_SERVICE_JSON}"
                 }
             }
         }
