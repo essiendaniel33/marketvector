@@ -1,6 +1,6 @@
 [
   {
-    "name": "terraform-pipeline",
+    "name": "infrastructure-provision",
     "repo": "https://github.com/essiendaniel2013/marketvector.git",
     "branch": "main",
     "jenkinsfile": "terraform/Jenkinsfile"
