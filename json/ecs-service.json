@@ -2,6 +2,8 @@
   "cluster": "marketvector-ecs-cluster",
   "service": "marketvector-ecs-service",
   "taskDefinition": "arn:aws:ecs:us-east-1:905418280053:task-definition/marketvector-app:31",
+  "desiredCount": 2,
+  "launchType": "FARGATE",
   "platformVersion": "LATEST",
   "networkConfiguration": {
     "awsvpcConfiguration": {
