@@ -3,7 +3,7 @@ pipeline {
     parameters {
         string(name: 'BRANCH', defaultValue: 'main', description: 'Pass the name of branch to build from')
         string(name: 'REPO_URL', defaultValue: 'https://github.com/essiendaniel2013/marketvector.git', description: 'Pass the Repository URL to build from')
-        string(name: 'VERSION', defaultValue: "V00${BUILD_ID}" description: 'Version of Docker image to be built, e.g., V001')
+        string(name: 'VERSION', defaultValue: "V00${BUILD_ID}", description: 'Version of Docker image to be built, e.g., V001')
     }
     environment {
         AWS_REGION = 'us-east-1'
