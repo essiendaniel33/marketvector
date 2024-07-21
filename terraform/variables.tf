@@ -1,3 +1,9 @@
+variable "aws_region" {
+  description = "The AWS region to deploy resources"
+  type        = string
+  default     = "us-east-1"
+}
+
 variable "vpc_id" {
   description = "The ID of the VPC where the ECS cluster will be deployed"    
   type        = string
