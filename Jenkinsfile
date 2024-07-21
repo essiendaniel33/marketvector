@@ -40,5 +40,26 @@ pipeline {
                      }             
               }
            }
+
+         stage('Running Task Definition') {
+            steps {
+                script {
+                    dir('json') {
+                    sh "aws ecs register-task-definition --cli-input-json file://task-def.json"
+                    }
+                  }  
+                }
+              }
+
+ /*        stage('ECS service') {
+            steps {
+                script {
+                    dir('json') {
+                    sh "aws ecs create-service --cli-input-json file://ecs-service.json"
+                    }
+                  }
+                }
+             }   
+    */
       }
   }  
