@@ -58,7 +58,7 @@ pipeline {
                     }
                   }
                 }
-                
+     */           
         
          stage('Update new ecs service') {
             steps {
@@ -69,6 +69,6 @@ pipeline {
                   }
                 }
              }   
- */
+ 
       }
   }  
