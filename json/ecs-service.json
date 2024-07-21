@@ -1,8 +1,10 @@
 {
   "cluster": "marketvector-ecs-cluster",
-  "service": "marketvector-ecs-service",
-  "taskDefinition": "arn:aws:ecs:us-east-1:905418280053:task-definition/marketvector-app:22",
+  "serviceName": "marketvector-ecs-service",
+  "taskDefinition": "arn:aws:ecs:us-east-1:905418280053:task-definition/marketvector-app:10",
   "desiredCount": 2,
+  "launchType": "FARGATE",
+  "platformVersion": "LATEST",
   "networkConfiguration": {
     "awsvpcConfiguration": {
       "subnets": [
@@ -25,6 +27,5 @@
   "deploymentConfiguration": {
     "minimumHealthyPercent": 50,
     "maximumPercent": 200
-  },
-  "forceNewDeployment": true
+  }
 }
