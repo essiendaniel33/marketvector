@@ -93,7 +93,6 @@ pipeline {
             }
         }
         
-        stages {
         stage('Check and Update ECS Service') {
             steps {
                 script {
