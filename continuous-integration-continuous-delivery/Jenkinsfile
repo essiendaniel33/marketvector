@@ -1,8 +1,8 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'BRANCH', defaultValue: 'main', description: 'Pass the name of branch to build from')
-        string(name: 'REPO_URL', defaultValue: 'https://github.com/essiendaniel2013/marketvector.git', description: 'Pass the Repository URL to build from')
+        string(name: 'BRANCH', defaultValue: 'main', description: 'Branch to build from')
+        string(name: 'REPO_URL', defaultValue: 'https://github.com/essiendaniel2013/marketvector.git', description: 'Repository URL to build from')
         string(name: 'VERSION', defaultValue: "V00${BUILD_ID}", description: 'Version of Docker image to be built, e.g., V001')
     }
     environment {
@@ -16,16 +16,12 @@ pipeline {
     stages {
         stage('Clone GitHub Repo') {
             steps {
-                script {
-                    git branch: "${BRANCH}", credentialsId: 'github_creds', url: "${REPO_URL}"
-                }
+                git branch: "${BRANCH}", credentialsId: 'github_creds', url: "${REPO_URL}"
             }
         }
         stage('Building Docker Image') {
             steps {
-                script {
-                    sh "docker build -t marketvector-html-image ."
-                }
+                sh "docker build -t marketvector-html-image ."
             }
         }
         stage('Push To Elastic Container Registry') {
@@ -58,9 +54,13 @@ pipeline {
 
                     echo "Task Definition ARN: ${taskDefArn}"
 
-                    def ecsServiceJson = readFile(file: ECS_SERVICE_JSON)
-                    ecsServiceJson = ecsServiceJson.replaceAll(/"taskDefinition": "arn:aws:ecs:[^"]+"/, "\"taskDefinition\": \"${taskDefArn}\"")
-                    writeFile(file: ECS_SERVICE_JSON, text: ecsServiceJson)
+                    def createServiceJson = readFile(file: CREATE_SERVICE_FILE)
+                    createServiceJson = createServiceJson.replaceAll(/"taskDefinition": "arn:aws:ecs:[^"]+"/, "\"taskDefinition\": \"${taskDefArn}\"")
+                    writeFile(file: CREATE_SERVICE_FILE, text: createServiceJson)
+
+                    def updateServiceJson = readFile(file: UPDATE_SERVICE_FILE)
+                    updateServiceJson = updateServiceJson.replaceAll(/"taskDefinition": "arn:aws:ecs:[^"]+"/, "\"taskDefinition\": \"${taskDefArn}\"")
+                    writeFile(file: UPDATE_SERVICE_FILE, text: updateServiceJson)
                 }
             }
         }
@@ -75,35 +75,33 @@ pipeline {
                     '''
                 }
             }
-        } 
-
+        }
         stage('Wait for Tasks to Stop') {
             steps {
                 script {
                     timeout(time: 1, unit: 'MINUTES') {
                         waitUntil {
                             def tasks = sh(script: """
-                                aws ecs list-tasks --cluster marketvector-ecs-cluster --service-name marketvector-ecs-service --desired-status STOPPED --query taskArns --output text
+                                aws ecs list-tasks --cluster marketvector-ecs-cluster --service-name marketvector-ecs-service --desired-status RUNNING --query taskArns --output text
                             """, returnStdout: true).trim()
 
-                            return tasks != null && !tasks.isEmpty()
+                            return tasks == null || tasks.isEmpty()
                         }
                     }
                 }
             }
         }
-        
         stage('Check and Update ECS Service') {
             steps {
                 script {
                     sh '''
-                    SERVICE_EXISTS=$(aws ecs describe-services --cluster $CLUSTER_NAME --services $SERVICE_NAME --query "services[?status=='ACTIVE'].[serviceName]" --output text)
+                    SERVICE_EXISTS=$(aws ecs describe-services --cluster marketvector-ecs-cluster --services marketvector-ecs-service --query "services[?status=='ACTIVE'].[serviceName]" --output text)
 
                     if [ -z "$SERVICE_EXISTS" ]; then
-                      echo "Service $SERVICE_NAME does not exist. Creating service..."
+                      echo "Service marketvector-ecs-service does not exist. Creating service..."
                       aws ecs create-service --cli-input-json file://$CREATE_SERVICE_FILE
                     else
-                      echo "Service $SERVICE_NAME exists. Updating service..."
+                      echo "Service marketvector-ecs-service exists. Updating service..."
                       aws ecs update-service --cli-input-json file://$UPDATE_SERVICE_FILE
                     fi
                     '''
@@ -112,5 +110,3 @@ pipeline {
         }
     }
 }
-    
-
