@@ -10,7 +10,7 @@
         "subnet-04e7a2e028dcb65ea"
       ],
       "securityGroups": [
-        "sg-00db96001af1e1b16"
+        "sg-0ff0c144841dae437"
       ],
       "assignPublicIp": "ENABLED"
     }
