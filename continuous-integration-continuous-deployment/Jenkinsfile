@@ -10,7 +10,7 @@ pipeline {
         string(name: 'SERVICE_NAME', defaultValue: 'marketvector-ecs-service', description: 'ECS Service Name')
         string(name: 'ECS_CLUSTER_NAME', defaultValue: 'marketvector-ecs-cluster', description: 'ECS Cluster Name')
     }
-    }
+
     environment {
         BRANCH = "${params.BRANCH}"
         REPO_URL = "${params.REPO_URL}"
