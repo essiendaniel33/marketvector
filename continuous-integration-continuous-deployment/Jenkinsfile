@@ -7,6 +7,9 @@ pipeline {
         string(name: 'TASK_DEF_JSON', defaultValue: 'continuous-integration-continuous-delivery/task-def.json', description: 'Path to the task definition JSON file')
         string(name: 'CREATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-delivery/create-ecs-service.json', description: 'Path to the create service JSON file')
         string(name: 'UPDATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-delivery/update-ecs-service.json', description: 'Path to the update service JSON file')
+        string(name: 'SERVICE_NAME', defaultValue: 'marketvector-ecs-service', description: 'ECS Service Name')
+        string(name: 'ECS_CLUSTER_NAME', defaultValue: 'marketvector-ecs-cluster', description: 'ECS Cluster Name')
+    }
     }
     environment {
         BRANCH = "${params.BRANCH}"
@@ -15,6 +18,8 @@ pipeline {
         TASK_DEF_JSON = "${params.TASK_DEF_JSON}"
         CREATE_SERVICE_FILE = "${params.CREATE_SERVICE_FILE}"
         UPDATE_SERVICE_FILE = "${params.UPDATE_SERVICE_FILE}"
+        SERVICE_NAME = "${params.SERVICE_NAME}"
+        ECS_CLUSTER_NAME = "${params.ECS_CLUSTER_NAME}"
     }
     stages {
         stage('Clone GitHub Repo') {
@@ -71,18 +76,18 @@ pipeline {
             steps {
                 script {
                     def serviceExists = sh(script: """
-                        aws ecs describe-services --cluster marketvector-ecs-cluster --services marketvector-ecs-service --query "services[?status=='ACTIVE'].[serviceName]" --output text
+                        aws ecs describe-services --cluster ${ECS_CLUSTER_NAME} --services ${SERVICE_NAME} --query "services[?status=='ACTIVE'].[serviceName]" --output text
                     """, returnStdout: true).trim()
 
                     if (serviceExists) {
                         sh '''
-                        tasks=$(aws ecs list-tasks --cluster marketvector-ecs-cluster --service-name marketvector-ecs-service --desired-status RUNNING --query taskArns --output text)
+                        tasks=$(aws ecs list-tasks --cluster ${ECS_CLUSTER_NAME} --service-name ${SERVICE_NAME} --desired-status RUNNING --query taskArns --output text)
                         for task in $tasks; do
-                            aws ecs stop-task --cluster marketvector-ecs-cluster --task $task
+                            aws ecs stop-task --cluster ${ECS_CLUSTER_NAME} --task $task
                         done
                         '''
                     } else {
-                        echo "Service marketvector-ecs-service does not exist. Skipping stop tasks step."
+                        echo "Service ${SERVICE_NAME} does not exist. Skipping stop tasks step."
                     }
                 }
             }
@@ -91,21 +96,21 @@ pipeline {
             steps {
                 script {
                     def serviceExists = sh(script: """
-                        aws ecs describe-services --cluster marketvector-ecs-cluster --services marketvector-ecs-service --query "services[?status=='ACTIVE'].[serviceName]" --output text
+                        aws ecs describe-services --cluster ${ECS_CLUSTER_NAME} --services ${SERVICE_NAME} --query "services[?status=='ACTIVE'].[serviceName]" --output text
                     """, returnStdout: true).trim()
 
                     if (serviceExists) {
                         timeout(time: 5, unit: 'MINUTES') {
                             waitUntil {
                                 def tasks = sh(script: """
-                                    aws ecs list-tasks --cluster marketvector-ecs-cluster --service-name marketvector-ecs-service --desired-status RUNNING --query taskArns --output text
+                                    aws ecs list-tasks --cluster ${ECS_CLUSTER_NAME} --service-name ${SERVICE_NAME} --desired-status RUNNING --query taskArns --output text
                                 """, returnStdout: true).trim()
 
                                 return tasks == null || tasks.isEmpty()
                             }
                         }
                     } else {
-                        echo "Service marketvector-ecs-service does not exist. Skipping wait for tasks to stop step."
+                        echo "Service ${SERVICE_NAME} does not exist. Skipping wait for tasks to stop step."
                     }
                 }
             }
@@ -114,13 +119,13 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    SERVICE_EXISTS=$(aws ecs describe-services --cluster marketvector-ecs-cluster --services marketvector-ecs-service --query "services[?status=='ACTIVE'].[serviceName]" --output text)
+                    SERVICE_EXISTS=$(aws ecs describe-services --cluster ${ECS_CLUSTER_NAME} --services ${SERVICE_NAME} --query "services[?status=='ACTIVE'].[serviceName]" --output text)
 
                     if [ -z "$SERVICE_EXISTS" ]; then
-                      echo "Service marketvector-ecs-service does not exist. Creating service..."
+                      echo "Service ${SERVICE_NAME} does not exist. Creating service..."
                       aws ecs create-service --cli-input-json file://$CREATE_SERVICE_FILE
                     else
-                      echo "Service marketvector-ecs-service exists. Updating service..."
+                      echo "Service ${SERVICE_NAME} exists. Updating service..."
                       aws ecs update-service --cli-input-json file://$UPDATE_SERVICE_FILE
                     fi
                     '''
