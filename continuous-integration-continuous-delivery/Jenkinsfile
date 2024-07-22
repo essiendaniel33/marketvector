@@ -10,7 +10,8 @@ pipeline {
         REPO_URL = "${params.REPO_URL}"
         VERSION = "${params.VERSION}"
         TASK_DEF_JSON = 'continuous-integration-continuous-delivery/task-def.json'
-        ECS_SERVICE_JSON = 'continuous-integration-continuous-delivery/ecs-service.json'
+        CREATE_SERVICE_FILE = 'continuous-integration-continuous-delivery/ecs-service.json'
+        UPDATE_SERVICE_FILE = 'continuous-integration-continuous-delivery/ecs1-service.json'
     }
     stages {
         stage('Clone GitHub Repo') {
@@ -92,12 +93,25 @@ pipeline {
             }
         }
         
-        stage('Create ECS Service') {
+        stages {
+        stage('Check and Update ECS Service') {
             steps {
                 script {
-                    sh "aws ecs create-service --cli-input-json file://${ECS_SERVICE_JSON}"
+                    sh '''
+                    SERVICE_EXISTS=$(aws ecs describe-services --cluster $CLUSTER_NAME --services $SERVICE_NAME --query "services[?status=='ACTIVE'].[serviceName]" --output text)
+
+                    if [ -z "$SERVICE_EXISTS" ]; then
+                      echo "Service $SERVICE_NAME does not exist. Creating service..."
+                      aws ecs create-service --cli-input-json file://$CREATE_SERVICE_FILE
+                    else
+                      echo "Service $SERVICE_NAME exists. Updating service..."
+                      aws ecs update-service --cli-input-json file://$UPDATE_SERVICE_FILE
+                    fi
+                    '''
                 }
             }
         }
     }
 }
+    }
+
