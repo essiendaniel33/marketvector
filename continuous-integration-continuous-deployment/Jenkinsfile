@@ -132,12 +132,13 @@ pipeline {
         stage('Check and Update ECS Service') {
             steps {
                 script {
+                    def clientToken = UUID.randomUUID().toString()
                     sh """
                     SERVICE_EXISTS=\$(aws ecs describe-services --cluster ${ECS_CLUSTER_NAME} --services ${SERVICE_NAME} --query "services[?status=='ACTIVE'].[serviceName]" --output text)
 
                     if [ -z "\$SERVICE_EXISTS" ]; then
                       echo "Service ${SERVICE_NAME} does not exist. Creating service..."
-                      aws ecs create-service --cli-input-json file://${CREATE_SERVICE_FILE}
+                      aws ecs create-service --cli-input-json file://${CREATE_SERVICE_FILE} --client-token ${clientToken}
                     else
                       echo "Service ${SERVICE_NAME} exists. Updating service..."
                       aws ecs update-service --cli-input-json file://${UPDATE_SERVICE_FILE}
