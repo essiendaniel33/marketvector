@@ -63,7 +63,7 @@ pipeline {
                 }
             }
         }
- /*       stage('Stop all running tasks') {
+        stage('Stop all running tasks') {
             steps {
                 script {
                     sh '''
@@ -74,7 +74,7 @@ pipeline {
                     '''
                 }
             }
-        } */
+        } 
         stage('Create ECS Service') {
             steps {
                 script {
