@@ -68,19 +68,33 @@ pipeline {
                 script {
                     sh '''
                     tasks=$(aws ecs list-tasks --cluster marketvector-ecs-cluster --service-name marketvector-ecs-service --desired-status RUNNING --query taskArns --output text)
-                    for task in $tasks; do
-                        aws ecs stop-task --cluster marketvector-ecs-cluster --task $task
-                    done
+                    if [ -n "$tasks" ]; then
+                        for task in $tasks; do
+                            aws ecs stop-task --cluster marketvector-ecs-cluster --task $task
+                        done
+                    else
+                        echo "No running tasks found."
+                    fi
                     '''
                 }
             }
         }
-        stage('Create ECS Service') {
+        stage('Create or Update ECS Service') {
             steps {
                 script {
-                    sh "aws ecs create-service --cli-input-json file://${ECS_SERVICE_JSON}"
+                    def serviceExists = sh(script: """
+                        aws ecs describe-services --cluster marketvector-ecs-cluster --services marketvector-ecs-service --query 'services[0].serviceName' --output text
+                    """, returnStdout: true).trim()
+
+                    if (serviceExists == "None") {
+                        echo "Creating new ECS service."
+                        sh "aws ecs create-service --cli-input-json file://${ECS_SERVICE_JSON}"
+                    } else {
+                        echo "Updating existing ECS service."
+                        sh "aws ecs update-service --cli-input-json file://${ECS_SERVICE_JSON}"
+                    }
                 }
             }
-        } 
+        }
     }
 }
