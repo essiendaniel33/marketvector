@@ -9,8 +9,8 @@ pipeline {
         BRANCH = "${params.BRANCH}"
         REPO_URL = "${params.REPO_URL}"
         VERSION = "${params.VERSION}"
-        TASK_DEF_JSON = './task-def.json'
-        ECS_SERVICE_JSON = './ecs-service.json'
+        TASK_DEF_JSON = 'continuous-integration-continuous-delivery/task-def.json'
+        ECS_SERVICE_JSON = 'continuous-integration-continuous-delivery/ecs-service.json'
     }
     stages {
         stage('Clone GitHub Repo') {
@@ -38,18 +38,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Register task definition') {
-            steps {
-                script {
-                    sh """
-                    aws ecs register-task-definition --cli-input-json file://task-def.json
-                    aws ecs list-task-definitions
-                    """
-                }
-            }
-        }
-
         stage('Update Task Definition') {
             steps {
                 script {
@@ -87,7 +75,6 @@ pipeline {
                 }
             }
         }
-
         stage('Create ECS Service') {
             steps {
                 script {
