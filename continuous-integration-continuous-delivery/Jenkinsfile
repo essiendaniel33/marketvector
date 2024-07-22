@@ -10,8 +10,8 @@ pipeline {
         REPO_URL = "${params.REPO_URL}"
         VERSION = "${params.VERSION}"
         TASK_DEF_JSON = 'continuous-integration-continuous-delivery/task-def.json'
-        CREATE_SERVICE_FILE = 'continuous-integration-continuous-delivery/ecs-service.json'
-        UPDATE_SERVICE_FILE = 'continuous-integration-continuous-delivery/ecs1-service.json'
+        CREATE_SERVICE_FILE = 'continuous-integration-continuous-delivery/create-ecs-service.json'
+        UPDATE_SERVICE_FILE = 'continuous-integration-continuous-delivery/update-ecs-service.json'
     }
     stages {
         stage('Clone GitHub Repo') {
