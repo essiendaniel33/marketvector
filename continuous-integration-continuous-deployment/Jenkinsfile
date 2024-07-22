@@ -5,7 +5,7 @@ pipeline {
         string(name: 'REPO_URL', defaultValue: 'https://github.com/essiendaniel2013/marketvector.git', description: 'Repository URL to build from')
         string(name: 'VERSION', defaultValue: "V00${BUILD_ID}", description: 'Version of Docker image to be built, e.g., V001')
         string(name: 'TASK_DEF_JSON', defaultValue: 'continuous-integration-continuous-deployment/task-def.json', description: 'Path to the task definition JSON file')
-        string(name: 'CREATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-deplyoment/create-ecs-service.json', description: 'Path to the create service JSON file')
+        string(name: 'CREATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-deployment/create-ecs-service.json', description: 'Path to the create service JSON file')
         string(name: 'UPDATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-deployment/update-ecs-service.json', description: 'Path to the update service JSON file')
         string(name: 'SERVICE_NAME', defaultValue: 'marketvector-ecs-service', description: 'ECS Service Name')
         string(name: 'ECS_CLUSTER_NAME', defaultValue: 'marketvector-ecs-cluster', description: 'ECS Cluster Name')
@@ -21,17 +21,26 @@ pipeline {
         SERVICE_NAME = "${params.SERVICE_NAME}"
         ECS_CLUSTER_NAME = "${params.ECS_CLUSTER_NAME}"
     }
+
     stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Clone GitHub Repo') {
             steps {
                 git branch: "${BRANCH}", credentialsId: 'github_creds', url: "${REPO_URL}"
             }
         }
+
         stage('Building Docker Image') {
             steps {
                 sh "docker build -t marketvector-html-image ."
             }
         }
+
         stage('Push To Elastic Container Registry') {
             steps {
                 script {
@@ -43,6 +52,7 @@ pipeline {
                 }
             }
         }
+
         stage('Update Task Definition') {
             steps {
                 script {
@@ -53,6 +63,7 @@ pipeline {
                 }
             }
         }
+
         stage('Register Task Definition') {
             steps {
                 script {
@@ -72,6 +83,7 @@ pipeline {
                 }
             }
         }
+
         stage('Stop all running tasks') {
             steps {
                 script {
@@ -80,18 +92,19 @@ pipeline {
                     """, returnStdout: true).trim()
 
                     if (serviceExists) {
-                        sh '''
-                        tasks=$(aws ecs list-tasks --cluster ${ECS_CLUSTER_NAME} --service-name ${SERVICE_NAME} --desired-status RUNNING --query taskArns --output text)
-                        for task in $tasks; do
-                            aws ecs stop-task --cluster ${ECS_CLUSTER_NAME} --task $task
+                        sh """
+                        tasks=\$(aws ecs list-tasks --cluster ${ECS_CLUSTER_NAME} --service-name ${SERVICE_NAME} --desired-status RUNNING --query taskArns --output text)
+                        for task in \$tasks; do
+                            aws ecs stop-task --cluster ${ECS_CLUSTER_NAME} --task \$task
                         done
-                        '''
+                        """
                     } else {
                         echo "Service ${SERVICE_NAME} does not exist. Skipping stop tasks step."
                     }
                 }
             }
         }
+
         stage('Wait for Tasks to Stop') {
             steps {
                 script {
@@ -115,20 +128,21 @@ pipeline {
                 }
             }
         }
+
         stage('Check and Update ECS Service') {
             steps {
                 script {
-                    sh '''
-                    SERVICE_EXISTS=$(aws ecs describe-services --cluster ${ECS_CLUSTER_NAME} --services ${SERVICE_NAME} --query "services[?status=='ACTIVE'].[serviceName]" --output text)
+                    sh """
+                    SERVICE_EXISTS=\$(aws ecs describe-services --cluster ${ECS_CLUSTER_NAME} --services ${SERVICE_NAME} --query "services[?status=='ACTIVE'].[serviceName]" --output text)
 
-                    if [ -z "$SERVICE_EXISTS" ]; then
+                    if [ -z "\$SERVICE_EXISTS" ]; then
                       echo "Service ${SERVICE_NAME} does not exist. Creating service..."
-                      aws ecs create-service --cli-input-json file://$CREATE_SERVICE_FILE
+                      aws ecs create-service --cli-input-json file://${CREATE_SERVICE_FILE}
                     else
                       echo "Service ${SERVICE_NAME} exists. Updating service..."
-                      aws ecs update-service --cli-input-json file://$UPDATE_SERVICE_FILE
+                      aws ecs update-service --cli-input-json file://${UPDATE_SERVICE_FILE}
                     fi
-                    '''
+                    """
                 }
             }
         }
