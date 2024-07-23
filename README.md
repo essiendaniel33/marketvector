@@ -5,11 +5,11 @@ This project automates the deployment of a static website on AWS ECS using Jenki
 ## Overview
 
 - **Jenkins**: CI/CD server running on EC2.
-- **Docker**: For building and managing containers.
+- **Docker**: For containerization of web application.
 - **Terraform**: For provisioning infrastructure.
 - **AWS Services**: ECR (for Docker images), S3 (for Terraform state), DynamoDB (for state locking), and ECS (for container orchestration).
 
-## Prerequisites
+## Prerequisites ans set up
 
 1. **Jenkins Server**:
    - EC2 instance with Jenkins.
@@ -17,43 +17,50 @@ This project automates the deployment of a static website on AWS ECS using Jenki
 
    ```bash
    # Update packages and install required software
-   sudo apt update && sudo apt upgrade -y
-   sudo apt install -y docker.io terraform git awscli
 
-   # Install Jenkins
-   wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
-   sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
-   sudo apt update
-   sudo apt install -y jenkins
+   # Installing docker and adding jenkins user to docker group
+   sudo yum update -y
+   sudo yum install docker
+   docker --version
+   sudo systemctl start docker
+   sudo systemctl enable docker
+   sudo chmod 770 /var/run/docker.sock
 
-   # Start Jenkins
+   # Installing terraform
+   sudo wget https://releases.hashicorp.com/terraform/1.3.7/terraform_1.3.7_linux_amd64.zip
+   sudo unzip terraform_1.3.7_linux_amd64.zip
+   sudo mv terraform /usr/local/bin
+   terraform -v
+
+   # Installing git
+   sudo yum install git -y
+   git --version
+
+   # Installing aws cli
+   sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+   sudo unzip awscliv2.zip
+   sudo ./aws/install
+   aws --version
+   
+   # Install Jenkins- Check documentation: https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/
+   sudo wget -O /etc/yum.repos.d/jenkins.repo \https://pkg.jenkins.io/redhat-stable/jenkins.repo
+   sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+   sudo yum upgrade
+   sudo yum install java-17-amazon-corretto -y
+   sudo yum install jenkins -y
    sudo systemctl start jenkins
    sudo systemctl enable jenkins
-
-   # Add Jenkins and current user to Docker group
    sudo usermod -aG docker jenkins
-   sudo usermod -aG docker $USER
    ```
 
 2. **AWS Setup**:
 
-   - **Create ECR Repository for Docker Images**:
-     ```bash
-     aws ecr create-repository --repository-name marketvector-app-repo
-     ```
-
-   - **Create S3 Bucket for Terraform State Files**:
-     ```bash
-     aws s3api create-bucket --bucket my-terraform-state-bucket --region us-east-1
-     ```
-
-   - **Create DynamoDB Table for Terraform State Locking**:
-     ```bash
-     aws dynamodb create-table --table-name terraform-lock --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
-     ```
+   - **Create ECR Repository for Docker Images**
+   - **Create S3 Bucket for Terraform State Files**
+   - **Create DynamoDB Table for Terraform State Locking**
 
    - **Create IAM Role with Necessary Permissions Attached to the Jenkins Server**:
-     1. Sign in to the AWS Management Console and open the IAM console at https://console.aws.amazon.com/iam/.
+     1. Sign in to the AWS Management Console and open IAM 
      2. In the navigation pane, choose **Roles**.
      3. Choose **Create role**.
      4. In the **Create role** page, select **AWS service** and choose **EC2**.
@@ -63,110 +70,46 @@ This project automates the deployment of a static website on AWS ECS using Jenki
         - **AmazonDynamoDBFullAccess**
         - **AmazonECS_FullAccess**
         - **AmazonECRFullAccess**
-        - **AdministratorAccess** (Adjust based on your security requirements)
-     6. For **Role name**, enter `jenkins-ec2-role`.
+        - **AdministratorAccess** 
+     6. For **Role name**, enter `jenkins-role`.
      7. Choose **Create role**.
-     8. Navigate to the EC2 console at https://console.aws.amazon.com/ec2/.
-     9. Select your Jenkins EC2 instance.
-     10. Choose **Actions**, then **Security**, and then **Modify IAM role**.
-     11. Select the IAM role (`jenkins-ec2-role`) and attach it to the instance.
+     8. Navigate to your jenkins EC2 instance.
+     9. Choose **Actions**, then **Security**, and then **Modify IAM role**.
+     10. Select the IAM role (`jenkins-role`) and attach it to the instance.
 
 3. **GitHub Repository**:
    - Contains Terraform scripts, ECS task and service definitions, application code, and Jenkinsfiles.
 
    ```bash
    # Navigate to the directory where you want to clone the repository
-   cd /path/to/directory
-
    # Clone the repository
    git clone https://github.com/essiendaniel2013/marketvector.git
    ```
-
-## Setup Instructions
-
-1. **Prepare Jenkins Server**:
-   - Launch an EC2 instance.
-   - Install Docker, Terraform, Git, and AWS CLI.
-   - Configure Jenkins with necessary plugins and credentials.
-
-   ```bash
-   # Install Jenkins plugins (via Jenkins UI or script)
-   # Recommended plugins: Pipeline, Git, Docker Pipeline, Terraform, AWS Credentials
-   ```
-
-2. **AWS Resource Setup**:
-   - Create an ECR repository.
-   - Create an S3 bucket for Terraform.
-   - Create a DynamoDB table for state locking.
-   - Create and attach an IAM role to the Jenkins server.
-
-3. **Clone the Git Repository**:
-   - Clone the repository that contains Terraform scripts, ECS task and service definitions, application code, and Jenkinsfiles.
-
-   ```bash
-   # Navigate to the directory where you want to clone the repository
-   cd /path/to/directory
-
-   # Clone the repository
-   git clone https://github.com/essiendaniel2013/marketvector.git
-   ```
-
+   - Make all necessary crendential changes in the terraform codes, pipeline lists and the Jenkinsfiles
+   - Atfer push them to you repository
+     
 ## Deployment Process
 
 1. **Configure Seed Job**:
    - Use the seed job in Jenkins to create two pipelines:
-     - **Infrastructure Provision Pipeline**: Sets up ECS cluster, CloudWatch, and related resources.
-     - **Deployment Pipeline**: Handles Docker image building, ECR push, ECS task definition registration, and ECS service updates.
+     - **infrastructure-provision pipeline**: Sets up ECS cluster, CloudWatch, and related resources.
+     - **continuous-integration-continuous-deployment pipeline**: Handles Docker image building, ECR push, ECS task definition registration, and ECS service creation and updates.
 
-2. **Run Infrastructure Pipeline**:
-   - Triggers Terraform to provision the required AWS infrastructure.
+2. **Run infrastructure-provision pipeline**:
+   - Triggers terraform to provision the required AWS infrastructure.
 
-   ```bash
-   # Navigate to Terraform directory and initialize
-   cd path/to/terraform
-   terraform init
-
-   # Apply the Terraform plan
-   terraform apply
-   ```
-
-3. **Run Deployment Pipeline**:
+3. **Run continuous-integration-continuous-deployment pipeline**:
    - Builds and pushes the Docker image to ECR.
    - Updates ECS task definition and service.
    - Deploys the application and verifies via the load balancer’s DNS name.
-
-   ```bash
-   # Build Docker image
-   docker build -t oxer-html-image .
-
-   # Tag Docker image
-   docker tag oxer-html-image:latest 905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:v001
-
-   # Login to ECR
-   aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 905418280053.dkr.ecr.us-east-1.amazonaws.com
-
-   # Push Docker image to ECR
-   docker push 905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:v001
-   ```
-
+  
 ## Webhook Configuration
 
 - Set up a GitHub webhook to trigger Jenkins pipelines on code updates.
-
-   ```bash
-   # In GitHub repository settings, add webhook with Jenkins URL
-   # Example: http://your-jenkins-server:8080/github-webhook/
-   ```
+   - In GitHub repository settings, add webhook with Jenkins URL
+   - Example: http://3.94.115.161:8080/github-webhook/
 
 ## Troubleshooting
 
 - **Jenkins Issues**: Check Jenkins logs and AWS credentials.
 - **AWS Deployment Issues**: Verify resources in AWS Console and check CloudWatch logs.
-
-## License
-
-This project is licensed under the MIT License.
-
----
-
-Feel free to modify and expand this README based on your specific requirements and additional details.
