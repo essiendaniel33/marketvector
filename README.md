@@ -85,7 +85,7 @@ This project automates the deployment of a static website on AWS ECS using Jenki
    # Clone the repository
    git clone https://github.com/essiendaniel2013/marketvector.git
    ```
-   - Make all necessary crendential changes in the terraform codes, pipeline lists and the Jenkinsfiles
+   - Make all necessary crendentials and parameters changes in the terraform codes, pipeline lists and the Jenkinsfiles
    - Atfer push them to you repository
      
 ## Deployment Process
