@@ -9,7 +9,7 @@ This project automates the deployment of a static website on AWS ECS using Jenki
 - **Terraform**: For provisioning infrastructure.
 - **AWS Services**: ECR (for Docker images), S3 (for Terraform state), DynamoDB (for state locking), and ECS (for container orchestration).
 
-## Prerequisites ans set up
+## Prerequisites and set up
 
 1. **Jenkins Server**:
    - EC2 instance with Jenkins.
