@@ -20,7 +20,7 @@ This project automates the deployment of a static website on AWS ECS using Jenki
 
    # Installing docker and adding jenkins user to docker group
    sudo yum update -y
-   sudo yum install docker
+   sudo yum install docker -y
    docker --version
    sudo systemctl start docker
    sudo systemctl enable docker
@@ -70,7 +70,8 @@ This project automates the deployment of a static website on AWS ECS using Jenki
         - **AmazonDynamoDBFullAccess**
         - **AmazonECS_FullAccess**
         - **AmazonECRFullAccess**
-        - **AdministratorAccess** 
+        - **AWSCloudFormationFullAccess**
+        - **AmazonVPCFullAccess** 
      6. For **Role name**, enter `jenkins-role`.
      7. Choose **Create role**.
      8. Navigate to your jenkins EC2 instance.
@@ -107,7 +108,7 @@ This project automates the deployment of a static website on AWS ECS using Jenki
 
 - Set up a GitHub webhook to trigger Jenkins pipelines on code updates.
    - In GitHub repository settings, add webhook with Jenkins URL
-   - Example: http://3.94.115.161:8080/github-webhook/
+   - Example: http://<jenkins-server-ip>:8080/github-webhook/
 
 ## Troubleshooting
 
