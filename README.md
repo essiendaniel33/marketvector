@@ -108,7 +108,7 @@ This project automates the deployment of a static website on AWS ECS using Jenki
 
 - Set up a GitHub webhook to trigger Jenkins pipelines on code updates.
    - In GitHub repository settings, add webhook with Jenkins URL
-   - Example: http://<jenkins-server-ip>:8080/github-webhook/
+   - Example: http://jenkins-server-ip:8080/github-webhook/
 
 ## Troubleshooting
 
