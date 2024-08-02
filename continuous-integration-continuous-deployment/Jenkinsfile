@@ -2,13 +2,13 @@ pipeline {
     agent any
     parameters {
         string(name: 'BRANCH', defaultValue: 'main', description: 'Branch to build from')
-        string(name: 'REPO_URL', defaultValue: 'https://github.com/essiendaniel2013/marketvector.git', description: 'Repository URL to build from')
+        string(name: 'REPO_URL', defaultValue: 'https://github.com/essiendaniel33/marketvector.git', description: 'Repository URL to build from')
         string(name: 'VERSION', defaultValue: "V00${BUILD_ID}", description: 'Version of Docker image to be built, e.g., V001')
         string(name: 'TASK_DEF_JSON', defaultValue: 'continuous-integration-continuous-deployment/task-def.json', description: 'Path to the task definition JSON file')
         string(name: 'CREATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-deployment/create-ecs-service.json', description: 'Path to the create service JSON file')
         string(name: 'UPDATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-deployment/update-ecs-service.json', description: 'Path to the update service JSON file')
-        string(name: 'SERVICE_NAME', defaultValue: 'marketvector-ecs-service', description: 'ECS Service Name')
-        string(name: 'ECS_CLUSTER_NAME', defaultValue: 'marketvector-ecs-cluster', description: 'ECS Cluster Name')
+        string(name: 'SERVICE_NAME', defaultValue: 'test-ecs-service', description: 'ECS Service Name')
+        string(name: 'ECS_CLUSTER_NAME', defaultValue: 'test-ecs-cluster', description: 'ECS Cluster Name')
     }
 
     environment {
@@ -37,7 +37,7 @@ pipeline {
 
         stage('Building Docker Image') {
             steps {
-                sh "docker build -t marketvector-html-image ."
+                sh "docker build -t test-app-image ."
             }
         }
 
@@ -56,7 +56,7 @@ pipeline {
         stage('Update Task Definition') {
             steps {
                 script {
-                    def image = "905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:${VERSION}"
+                    def image = "905418280053.dkr.ecr.us-east-1.amazonaws.com/test-app-repo:${VERSION}"
                     def taskDefJson = readFile(file: TASK_DEF_JSON)
                     taskDefJson = taskDefJson.replaceAll(/"image": "905418280053.dkr.ecr.us-east-1.amazonaws.com\/marketvector-app-repo:[^"]+"/, "\"image\": \"${image}\"")
                     writeFile(file: TASK_DEF_JSON, text: taskDefJson)
