@@ -8,7 +8,7 @@ pipeline {
         string(name: 'GITHUB_CREDENTIAL', defaultValue: 'github_cred', description: 'Github access credentials id')
         string(name: 'GITHUB_REPO_URL', defaultValue: 'https://github.com/essiendaniel33/marketvector.git', description: 'Github repository url')
         string(name: 'GITHUB_BRANCH', defaultValue: 'main', description: 'Github branch for your build')
-        choice(name: 'TERRAFORM_ACTION', choices: ['', 'apply', 'destroy'], description: 'Select Terraform action: Apply or Destroy')
+        choice(name: 'TERRAFORM_ACTION', choices: ['', 'apply', 'destroy', 'terraform init -reconfigure'], description: 'Select Terraform action: Apply or Destroy')
     }
 
     environment {
