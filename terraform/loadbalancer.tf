@@ -1,5 +1,5 @@
 resource "aws_lb" "main" {
-  name               = "marketvector-lb"
+  name               = "test-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs.id]
@@ -9,7 +9,7 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "main" {
-  name        = "marketvector-tg"
+  name        = "test-tg"
   port        = var.container_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
