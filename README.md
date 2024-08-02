@@ -72,6 +72,8 @@ This project automates the deployment of a static website on AWS ECS using Jenki
         - **EC2InstanceProfileForImageBuilderECRCont**
         - **AWSAppRunnerServicePolicyForECRAcc**
         - **AWSCloudFormationFullAccess**
+        - **AmazonECSTaskExecutionRolePolicy**
+        - **CloudWatchEventsFullAccess**
         - **AmazonVPCFullAccess** 
      6. For **Role name**, enter `jenkins-role`.
      7. Choose **Create role**.
