@@ -46,7 +46,7 @@ pipeline {
                 script {
                     sh """
                     aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 905418280053.dkr.ecr.us-east-1.amazonaws.com
-                    docker tag marketvector-html-image 905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:${VERSION}
+                    docker tag test-html-image 905418280053.dkr.ecr.us-east-1.amazonaws.com/test-app-repo:${VERSION}
                     docker push 905418280053.dkr.ecr.us-east-1.amazonaws.com/marketvector-app-repo:${VERSION}
                     """
                 }
@@ -58,7 +58,7 @@ pipeline {
                 script {
                     def image = "905418280053.dkr.ecr.us-east-1.amazonaws.com/test-app-repo:${VERSION}"
                     def taskDefJson = readFile(file: TASK_DEF_JSON)
-                    taskDefJson = taskDefJson.replaceAll(/"image": "905418280053.dkr.ecr.us-east-1.amazonaws.com\/marketvector-app-repo:[^"]+"/, "\"image\": \"${image}\"")
+                    taskDefJson = taskDefJson.replaceAll(/"image": "905418280053.dkr.ecr.us-east-1.amazonaws.com\/test-app-repo:[^"]+"/, "\"image\": \"${image}\"")
                     writeFile(file: TASK_DEF_JSON, text: taskDefJson)
                 }
             }
