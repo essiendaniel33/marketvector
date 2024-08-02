@@ -19,13 +19,13 @@ variable "subnet_ids" {
 variable "cluster_name" {
   description = "The name of the ECS cluster"
   type        = string
-  default     = "marketvector-ecs-cluster"
+  default     = "test-ecs-cluster"
 }
 
 variable "service_name" {
   description = "The name of the ECS service"
   type        = string
-  default     = "marketvector-ecs-service"
+  default     = "test-ecs-service"
 }
 
 variable "container_port" {
@@ -37,5 +37,5 @@ variable "container_port" {
 variable "desired_count" {
   description = "The number of desired tasks for the ECS service"
   type        = number
-  default     = 2
+  default     = 3
 }
