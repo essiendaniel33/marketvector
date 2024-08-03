@@ -39,7 +39,7 @@ pipeline {
 
         stage('Building Docker Image') {
             steps {
-                sh "docker build -t test-app-image ."
+                sh "docker build -t test-app-html-image ."
             }
         }
 
