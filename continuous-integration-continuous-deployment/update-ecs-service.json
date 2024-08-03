@@ -1,6 +1,6 @@
 {
-  "cluster": "marketvector-ecs-cluster",
-  "service": "marketvector-ecs-service",
+  "cluster": "test-ecs-cluster",
+  "service": "test-ecs-service",
   "taskDefinition": "arn:aws:ecs:us-east-1:905418280053:task-definition/test-app:2",
   "desiredCount": 3,
   "networkConfiguration": {
