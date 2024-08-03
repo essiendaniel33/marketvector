@@ -1,3 +1,3 @@
-FROM httpd:2.4
+FROM nginx:alpine
  
-COPY ./test-app-html/ /usr/local/apache2/htdocs/
+COPY ./test-app-html/ /usr/share/nginx/html/
