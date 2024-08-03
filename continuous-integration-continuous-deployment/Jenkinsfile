@@ -33,7 +33,7 @@ pipeline {
 
         stage('Clone GitHub Repo') {
             steps {
-                git branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_CREDENTIAL}, url: "${GITHUB_REPO_URL}"
+                git branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_CREDENTIAL}", url: "${GITHUB_REPO_URL}"
             }
         }
 
