@@ -1,5 +1,5 @@
 {
-  "family": "marketvector-app",
+  "family": "test-app",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "1024",
