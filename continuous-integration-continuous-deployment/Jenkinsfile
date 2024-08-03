@@ -1,8 +1,9 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'BRANCH', defaultValue: 'main', description: 'Branch to build from')
-        string(name: 'REPO_URL', defaultValue: 'https://github.com/essiendaniel33/marketvector.git', description: 'Repository URL to build from')
+        string(name: 'GITHUB_CREDENTIAL', defaultValue: 'github_cred', description: 'Github access credentials id')
+        string(name: 'GITHUB_BRANCH', defaultValue: 'main', description: 'Branch to build from')
+        string(name: 'GITHUB_REPO_URL', defaultValue: 'https://github.com/essiendaniel33/marketvector.git', description: 'Repository URL to build from')
         string(name: 'VERSION', defaultValue: "V00${BUILD_ID}", description: 'Version of Docker image to be built, e.g., V001')
         string(name: 'TASK_DEF_JSON', defaultValue: 'continuous-integration-continuous-deployment/task-def.json', description: 'Path to the task definition JSON file')
         string(name: 'CREATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-deployment/create-ecs-service.json', description: 'Path to the create service JSON file')
@@ -12,8 +13,9 @@ pipeline {
     }
 
     environment {
-        BRANCH = "${params.BRANCH}"
-        REPO_URL = "${params.REPO_URL}"
+        GITHUB_CREDENTIAL = "${params.GITHUB_CREDENTIAL}"
+        GITHUB_BRANCH = "${params.GITHUB_BRANCH}"
+        GITHUB_REPO_URL = "${params.GITHUB_REPO_URL}"
         VERSION = "${params.VERSION}"
         TASK_DEF_JSON = "${params.TASK_DEF_JSON}"
         CREATE_SERVICE_FILE = "${params.CREATE_SERVICE_FILE}"
@@ -31,7 +33,7 @@ pipeline {
 
         stage('Clone GitHub Repo') {
             steps {
-                git branch: "${BRANCH}", credentialsId: 'github_creds', url: "${REPO_URL}"
+                git branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_CREDENTIAL}, url: "${GITHUB_REPO_URL}"
             }
         }
 
