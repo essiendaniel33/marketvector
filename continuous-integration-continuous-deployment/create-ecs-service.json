@@ -12,14 +12,14 @@
         "subnet-04e7a2e028dcb65ea"
       ],
       "securityGroups": [
-        "sg-04c7488884055f103"
+        "sg-0203ad0ade4226dab"
       ],
       "assignPublicIp": "ENABLED"
     }
   },
   "loadBalancers": [
     {
-      "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:905418280053:targetgroup/test-tg/670c52f5c3c9cb00",
+      "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:905418280053:targetgroup/test-tg/46ad303d1c1158d0",
       "containerName": "test-app",
       "containerPort": 80
     }
