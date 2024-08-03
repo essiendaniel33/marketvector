@@ -9,7 +9,7 @@
   "containerDefinitions": [
     {
       "name": "test-app",
-      "image": "905418280053.dkr.ecr.us-east-1.amazonaws.com/test-app:V001",
+      "image": "905418280053.dkr.ecr.us-east-1.amazonaws.com/test-repo:V0023",
       "essential": true,
       "portMappings": [
         {
