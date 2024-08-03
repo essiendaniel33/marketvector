@@ -1,3 +1,3 @@
 FROM nginx:alpine
  
-COPY ./test-app-html/ /usr/share/nginx/html/
+COPY ./test-app-html/ /usr/local/apache2/htdocs/
