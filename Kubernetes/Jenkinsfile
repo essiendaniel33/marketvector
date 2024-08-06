@@ -1,0 +1,95 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'master', description: 'Branch to build from')
+        string(name: 'REPO_URL', defaultValue: 'https://github.com/ityourwayroby/marketvector.git', description: 'Repository URL to build from')
+        string(name: 'VERSION', defaultValue: "V00${BUILD_ID}", description: 'Version of Docker image to be built, e.g., V001')
+        string(name: 'TASK_DEF_JSON', defaultValue: 'continuous-integration-continuous-deployment/task-def.json', description: 'Path to the task definition JSON file')
+        string(name: 'CREATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-deployment/create-ecs-service.json', description: 'Path to the create service JSON file')
+        string(name: 'UPDATE_SERVICE_FILE', defaultValue: 'continuous-integration-continuous-deployment/update-ecs-service.json', description: 'Path to the update service JSON file')
+        string(name: 'SERVICE_NAME', defaultValue: 'marketvector-ecs-service', description: 'ECS Service Name')
+        string(name: 'ECS_CLUSTER_NAME', defaultValue: 'marketvector-ecs-cluster', description: 'ECS Cluster Name')
+    }
+
+    environment {
+        BRANCH = "${params.BRANCH}"
+        REPO_URL = "${params.REPO_URL}"
+        VERSION = "${params.VERSION}"
+        TASK_DEF_JSON = "${params.TASK_DEF_JSON}"
+        CREATE_SERVICE_FILE = "${params.CREATE_SERVICE_FILE}"
+        UPDATE_SERVICE_FILE = "${params.UPDATE_SERVICE_FILE}"
+        SERVICE_NAME = "${params.SERVICE_NAME}"
+        ECS_CLUSTER_NAME = "${params.ECS_CLUSTER_NAME}"
+        KUBECONFIG = '/home/jenkins/.kube/config'
+    }
+
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Clone GitHub Repo') {
+            steps {
+                git branch: "${BRANCH}", credentialsId: 'github_creds', url: "${REPO_URL}"
+            }
+        }
+
+        stage('Building Docker Image') {
+            steps {
+                sh "docker build -t eks-repo ."
+            }
+        }
+
+        stage('Push To Elastic Container Registry') {
+            steps {
+                script {
+                    
+                        sh """
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 905418280053.dkr.ecr.us-east-1.amazonaws.com
+                            docker tag eks-repo:latest 905418280053.dkr.ecr.us-east-1.amazonaws.com/eks-repo:${VERSION}
+                            docker push 905418280053.dkr.ecr.us-east-1.amazonaws.com/eks-repo:${VERSION}
+                        """
+                    
+                }
+            }
+        }
+
+        stage('Deploy To K8S Cluster') {
+            steps {
+                script {
+                    dir('kubernetes') {
+                    
+                        sh """
+                        
+                        echo "Deploying to Kubernetes cluster"
+                        export KUBECONFIG=${KUBECONFIG}
+                        kubectl apply -f .
+                        
+                        """
+                    }
+                    
+                }
+            }
+        }
+        
+        stage('Get K8S Cluster Services') {
+            steps {
+                script {
+                    dir('kubernetes') {
+                    
+                        sh """
+                        
+                        echo "Deploying to Kubernetes cluster"
+                        export KUBECONFIG=${KUBECONFIG}
+                        kubectl get svc --namespace=oxer-app-dev
+                        
+                        """
+                    }
+                    
+                }
+            }
+        }
+    }
+}
