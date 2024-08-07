@@ -52,14 +52,9 @@ pipeline {
                 script {
                     dir('kubernetes') {
                         sh """
-                             echo "Updating deployment.yaml with the new image version"
-                            if [ -f deployment.yaml ]; then
-                                sed -i 's|image:.*|image: ${ECR_REPO_URL}:${VERSION}|g' deployment.yaml
-                                cat deployment.yaml # Display the updated file for verification
-                            else
-                                echo "Error: deployment.yaml not found"
-                                exit 1
-                            fi
+                            echo "Updating deployment.yaml with the new image version"
+                            sed -i 's|image:.*|image: ${ECR_REPO_URL}:${VERSION}|g' deployment.yaml
+                            cat deployment.yaml # Display the updated file for verification
                         """
                     }
                 }
