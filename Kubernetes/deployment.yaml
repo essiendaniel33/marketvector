@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oxer-app
-  namespace: oxer-app-dev
+  name: mv-app
+  namespace: mv-app-dev
   labels:
-    app: oxer-app
+    app: mv-app
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: oxer-app
+      app: mv-app
   template:
     metadata:
       labels:
-        app: oxer-app
+        app: mv-app
     spec:
       containers:
-      - name: oxer-app-container
+      - name: mv-app-container
         image: 905418280053.dkr.ecr.us-east-1.amazonaws.com/eks-repo:latest
         ports:
         - containerPort: 80
