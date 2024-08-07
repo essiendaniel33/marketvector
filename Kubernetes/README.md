@@ -1,4 +1,3 @@
-```markdown
 # Jenkins and EKS Setup Guide
 
 ## Step 1: Set Up Jenkins Server
@@ -55,65 +54,4 @@
    chmod +x ./kubectl
    mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
    echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
-   mkdir -p /home/jenkins/.kube
-   cp /root/.kube/config /home/jenkins/.kube/config
-   chown jenkins:jenkins /home/jenkins/.kube/config
    sudo mv ./kubectl /usr/local/bin/kubectl
-   ```
-
-## Step 2: Create Your EKS Cluster
-
-Run the following command to create your EKS cluster:
-
-```bash
-eksctl create cluster --name demo-eks --region us-east-1 --nodegroup-name my-nodes --node-type t3.small --managed --nodes 2
-```
-
-## Step 3: Clone the Repository
-
-Clone the repository that contains the necessary configuration files:
-
-```bash
-git clone https://github.com/ityourwayroby/marketvector.git
-```
-
-## Step 4: Configure Jenkins
-
-1. **Edit Configuration Files**:
-   - Modify the `Jenkinsfile` and the YAML files in the `kubernetes` folder as needed.
-   - Push the changes to your GitHub repository.
-   - **Note**: Verify that your image repositories (ECR or Docker Hub) contain the necessary images.
-
-## Step 5: Create a Namespace in Kubernetes
-
-Create a namespace in your EKS cluster that matches the one specified in your YAML files.
-
-## Step 6: Set Up Jenkins Job
-
-1. **Access Jenkins UI**:
-   - Navigate to the Jenkins user interface.
-2. **Create a Job**:
-   - Configure a new Jenkins job to point to your `Jenkinsfile` located in the `kubernetes` folder.
-
-## Step 7: Run the Jenkins Job
-
-Execute the Jenkins job you created to deploy your application.
-
-## Step 8: Retrieve Load Balancer DNS
-
-1. **Check Pipeline Output**:
-   - The final stage of the pipeline will display the services in the required namespace. Look for the load balancer DNS name in the console output.
-
-2. **Access Your Application**:
-   - Use the load balancer DNS name to access your application.
-
-## Cleanup: Destroy Your EKS Cluster
-
-To delete the EKS cluster when no longer needed, run:
-
-```bash
-eksctl delete cluster --name demo-eks --region us-east-1
-```
-```
-
-This version of the `README.md` provides clear, step-by-step instructions with proper formatting and comments. It ensures that each step is easy to follow and understand.
