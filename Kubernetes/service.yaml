@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: oxer-app
-  namespace: oxer-app-dev
+  name: mv-app
+  namespace: mv-app-dev
   labels:
-    app: oxer-app
+    app: mv-app
 spec:
   type: LoadBalancer
   selector:
-    app: oxer-app
+    app: mv-app
   ports:
     - protocol: TCP
       port: 80
