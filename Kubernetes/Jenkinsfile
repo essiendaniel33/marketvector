@@ -1,18 +1,19 @@
 pipeline {
     agent any
     parameters {
-        string(name: 'BRANCH', defaultValue: 'master', description: 'Branch to build from')
-        string(name: 'REPO_URL', defaultValue: 'https://github.com/ityourwayroby/marketvector.git', description: 'Repository URL to build from')
+        string(name: 'GITHUB_CREDENTIAL', defaultValue: 'github_creds', description: 'Github access credentials id')
+        string(name: 'GITHUB_BRANCH', defaultValue: 'main', description: 'Branch to build from')
+        string(name: 'GITHUB_REPO_URL', defaultValue: 'https://github.com/essiendaniel33/marketvector.git', description: 'Repository URL to build from')
         string(name: 'VERSION', defaultValue: "V00${BUILD_ID}", description: 'Version of Docker image to be built, e.g., V001')
     }
 
     environment {
-        BRANCH = "${params.BRANCH}"
-        REPO_URL = "${params.REPO_URL}"
+        GITHUB_CREDENTIAL = "${params.GITHUB_CREDENTIAL}"
+        GITHUB_BRANCH = "${params.GITHUB_BRANCH}"
+        GITHUB_REPO_URL = "${params.GITHUB_REPO_URL}"
         VERSION = "${params.VERSION}"
         KUBECONFIG = '/home/jenkins/.kube/config'
         ECR_REPO_URL = "905418280053.dkr.ecr.us-east-1.amazonaws.com/eks-repo"
-        GIT_CREDENTIALS_ID = 'github_creds' // Ensure this matches your Jenkins credential ID
     }
 
     stages {
@@ -24,7 +25,7 @@ pipeline {
 
         stage('Clone GitHub Repo') {
             steps {
-                git branch: "${BRANCH}", credentialsId: GIT_CREDENTIALS_ID, url: "${REPO_URL}"
+                git branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_CREDENTIAL}", url: "${GITHUB_REPO_URL}"
             }
         }
 
@@ -82,7 +83,7 @@ pipeline {
                         sh """
                             echo "Fetching Kubernetes cluster services"
                             export KUBECONFIG=${KUBECONFIG}
-                            kubectl get svc --namespace=oxer-app-dev
+                            kubectl get svc --namespace=mv-app-dev
                         """
                     }
                 }
