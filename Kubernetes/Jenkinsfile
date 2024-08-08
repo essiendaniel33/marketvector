@@ -50,7 +50,7 @@ pipeline {
         stage('Update Kubernetes Deployment') {
             steps {
                 script {
-                    dir('kubernetes') {
+                    dir('Kubernetes') {
                         sh """
                             echo "Updating deployment.yaml with the new image version"
                             sed -i 's|image:.*|image: ${ECR_REPO_URL}:${VERSION}|g' deployment.yaml
