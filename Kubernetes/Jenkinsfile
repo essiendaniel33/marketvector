@@ -64,7 +64,7 @@ pipeline {
         stage('Deploy To K8S Cluster') {
             steps {
                 script {
-                    dir('kubernetes') {
+                    dir('Kubernetes') {
                         sh """
                             echo "Deploying to Kubernetes cluster"
                             export KUBECONFIG=${KUBECONFIG}
@@ -79,7 +79,7 @@ pipeline {
         stage('Get K8S Cluster Services') {
             steps {
                 script {
-                    dir('kubernetes') {
+                    dir('Kubernetes') {
                         sh """
                             echo "Fetching Kubernetes cluster services"
                             export KUBECONFIG=${KUBECONFIG}
