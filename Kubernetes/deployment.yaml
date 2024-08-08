@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
       - name: mv-app-container
-        image: 905418280053.dkr.ecr.us-east-1.amazonaws.com/eks-repo:V001
+        image: 905418280053.dkr.ecr.us-east-1.amazonaws.com/eks-repo:V009
         ports:
         - containerPort: 80
