@@ -101,7 +101,7 @@ pipeline {
                             git add --all
                             git commit -m "Update deployment.yaml with image version ${VERSION}"
                         """
-                        withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIAL, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                             sh """
                                 git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${REPO_URL.replace("https://", "")} ${BRANCH}
                             """
