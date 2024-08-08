@@ -103,7 +103,7 @@ pipeline {
                         """
                         withCredentials([usernamePassword(credentialsId: GITHUB_CREDENTIAL, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                             sh """
-                                git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${GITHUB_REPO_URL.replace("https://", "")} ${BRANCH}
+                                git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${GITHUB_REPO_URL.replace("https://", "")} ${GITHUB_BRANCH}
                             """
                         }
                     
